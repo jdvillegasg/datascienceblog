@@ -2,7 +2,7 @@ name: Data science blog
 on:
   push:
     branches:
-      - master
+      - main
 permissions:
   contents: write
   pages: write
