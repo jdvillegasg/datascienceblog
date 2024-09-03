@@ -183,4 +183,6 @@ $$
 
 Mean field variational family doesn't approximate well multimodal posterior distributions.
 
+I am adding this to check.
+
 <div style="margin-bottom:66px"><div>
