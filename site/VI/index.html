@@ -1,0 +1,628 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="..">
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.26">
+    
+    
+      
+        <title>Variational inference - Julian DS Blog</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.6543a935.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+  
+  
+    
+    
+  
+  
+  <style>:root{--md-admonition-icon--example:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 0v7l-7-7h7zm-9 0 9 9v12c0 1.662-1.338 3-3 3H5c-1.662 0-3-1.338-3-3V3c0-1.662 1.338-3 3-3h8zM8 17H6v1h2v-1zm5 0h-2v1h2v-1zm2.293-1.293a1 1 0 0 0 1.414-1.414l-.793-.793.793-.793a1 1 0 0 0-1.414-1.414l-.793.793-.793-.793a1 1 0 1 0-1.414 1.414l.793.793-.793.793a1 1 0 0 0 1.414 1.414l.793-.793.793.793zM18 17h-2v1h2v-1zm0-8H9.862L8 13.653 7.338 12H6v1h.662L8 16.347 10.539 10H18V9z"/></svg>');}</style>
+
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+   <link href="../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+    html.glightbox-open { overflow: initial; height: 100%; }
+    .gslide-title { margin-top: 0px; user-select: text; }
+    .gslide-desc { color: #666; user-select: text; }
+    .gslide-image img { background: white; }
+    .gscrollbar-fixer { padding-right: 15px; }
+    .gdesc-inner { font-size: 0.75rem; }
+    body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+    body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+    body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}</style> <script src="../assets/javascripts/glightbox.min.js"></script></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#motivation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Julian DS Blog" class="md-header__button md-logo" aria-label="Julian DS Blog" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Julian DS Blog
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Variational inference
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9v1Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="lime" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  Bayesian learning
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Julian DS Blog" class="md-nav__button md-logo" aria-label="Julian DS Blog" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Julian DS Blog
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Bayesian learning
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Bayesian learning
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Variational inference
+  </span>
+  
+
+      </a>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 style="font-size:46px;color:blue">Variational inference</h1>
+
+<h1 id="motivation">Motivation</h1>
+<p>Given some data <span class="arithmatex">\(\mathcal{D}\)</span> it is usually the case that we want to model the behaviour of our data given some hidden or latent variables. That is to say, there are some latent variables driving our data, but we don't have observations about them.</p>
+<p>Assuming that's the case, future data can be predicted knowing the <em>behaviour</em> of these latent variables. For doing so, one might want to compute the <em>posterior</em> probability density of the latent variables <span class="arithmatex">\(Z\)</span> (where <span class="arithmatex">\(Z\)</span> denotes here the set of all the latent variables) <em>given</em> the observed data <span class="arithmatex">\(X = \mathcal{D}\)</span>.</p>
+<div class="admonition note">
+<p class="admonition-title">Posterior</p>
+<div class="arithmatex">\[
+    p(Z | X = \mathcal{D}) = \dfrac{p(X | Z)p(Z)}{p(X)}
+\]</div>
+</div>
+<p>Here, <span class="arithmatex">\(X = \mathcal{D}\)</span> is used to emphasize that the data <span class="arithmatex">\(\mathcal{D}\)</span> taking specific values (i.e. <span class="arithmatex">\(\mathcal{D} = \{ 1.2, 1.3, 1.8\}\)</span>), is withdrawn from some probability distribution whose random variable (or random vector) is denoted by <span class="arithmatex">\(X\)</span>.</p>
+<div class="admonition tip">
+<p class="admonition-title">About X</p>
+<p>The data <span class="arithmatex">\(\mathcal{D}\)</span> is driven either by a random variable <span class="arithmatex">\(X\)</span> with <em>independent and identically distributed</em> (i.i.d) samples <span class="arithmatex">\(\mathcal{D} = \{ x_{i}\}_{i=1}^{N}\)</span>, or by a random vector <span class="arithmatex">\(\mathbf{X}\)</span> with entries <span class="arithmatex">\([\mathbf{X}]_{i} = x_{i}, \; i=1,..., N\)</span>, having a multivariate probability distribution. The difference between both cases is that in the latter case the observed data is correlated, while in the former case we assume independence of each sample.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Notation for X</p>
+<p>For simplicity in either case we will use the notation <span class="arithmatex">\(X\)</span> to refer either to a random variable or random vector.</p>
+</div>
+<p>The problem with the <em>posterior</em> distribution is that for it to be a valid probability distribution function it requires the computation of the marginal probability <span class="arithmatex">\(p(X)\)</span>.</p>
+<p>A look at the marginal probability <span class="arithmatex">\(p(X)\)</span> shows that it becomes very easily an intractable computation:</p>
+<div class="admonition note">
+<p class="admonition-title">Marginal</p>
+<div class="arithmatex">\[
+    p(X) = \int p(X,Z) dZ = \int p(X | Z) p(Z)dZ
+\]</div>
+</div>
+<p>For many <em>prior</em> <span class="arithmatex">\(p(Z)\)</span> and <em>likelihood</em> <span class="arithmatex">\(p(X | Z)\)</span>, the product of them will make the integral intractable analytically, and computationally expensive through numerical methods. Thus, there is a need to look for candidate approximations (commonly referred as <em>surrogates</em>) for <span class="arithmatex">\(p(Z | X)\)</span>.</p>
+<h1 id="surrogates-formulation">Surrogates formulation</h1>
+<p>In order to know if a surrogate <span class="arithmatex">\(q(Z)\)</span> is a good one, we need to measure the mismatch between <span class="arithmatex">\(q(Z)\)</span> and <span class="arithmatex">\(p(Z | X)\)</span>.</p>
+<p>Since both <span class="arithmatex">\(q(Z)\)</span> and <span class="arithmatex">\(p(Z|X)\)</span> are probability distributions, a natural measure for such mismatch is the KL-divergence:</p>
+<div class="admonition note">
+<p class="admonition-title">KL-divergence</p>
+<div class="arithmatex">\[
+    D_{KL}(q(Z), p(Z)) = \int q(Z) \log \left( \dfrac{q(Z)}{p(Z)} \right) dZ = \mathbb{E}_{Z \sim q(Z)}\left[ \log \left( \dfrac{q(Z)}{p(Z)} \right) \right]
+\]</div>
+</div>
+<p>Note that <span class="arithmatex">\(D_{KL}\)</span> is not a <em>distance</em> measure and so, it is not symmetrical (meaning that <span class="arithmatex">\(D_{KL}(q,p) \neq D_{KL}(p,q)\)</span>).</p>
+<p>Next we plug in the posterior into the KL-divergence formula so that we have:</p>
+<div class="arithmatex">\[
+D_{KL}(q(Z), p(Z | X)) = \mathbb{E}_{Z \sim q(Z)}\left[ \log \left( \dfrac{q(Z)}{p(Z | X)} \right) \right] \: \: \: \: \: (1)
+\]</div>
+<p>Note that this equation is not very helpful, since precisely what we are trying to get rid of is the posterior <span class="arithmatex">\(p(Z | X)\)</span>. However, we can achieve that by rewriting the posterior:</p>
+<div class="arithmatex">\[
+D_{KL}(q(Z), p(Z | X)) = \mathbb{E}_{Z \sim q(Z)}\left[ \log \left( \dfrac{q(Z) p(X)}{p(Z, X)} \right) \right] = \mathbb{E}_{Z \sim q(Z)}\left[ \log q(Z) \right] + \mathbb{E}_{Z \sim q(Z)}\left[ \log p(X) \right] - \mathbb{E}_{Z \sim q(Z)}\left[ \log p(Z,X) \right] \: \: \: \: \: (2)
+\]</div>
+<p>where we are using the definition of the joint probability distribution in terms of the conditional:</p>
+<div class="admonition note">
+<p class="admonition-title">Joint distribution from conditional</p>
+<div class="arithmatex">\[
+p(Z| X) = \dfrac{p(Z, X)}{p(X)}
+\]</div>
+</div>
+<p>We can now state the variational inference problem or task:</p>
+<div class="admonition note">
+<p class="admonition-title">Variational inference optimization task</p>
+<p>To find <span class="arithmatex">\(q^{*}(Z)\)</span> such that:
+$$
+q^{*}(Z) = arg\min_{q} D_{KL}(q(Z), p(Z | X))
+$$</p>
+</div>
+<h2 id="unfold-the-optimization-task">Unfold the optimization task</h2>
+<p>Note that we still have no access to the <em>evidence</em> or <em>marginal</em> <span class="arithmatex">\(p(X)\)</span> in Equation (2), and therefore we can't compute the KL-divergence. We can, however, overcome this difficulty by also noting that, from its definition, we have that <span class="arithmatex">\(D_{KL}(q,p) \geq 0\)</span>. Let's use this inequality into Equation (2):</p>
+<div class="arithmatex">\[
+\mathbb{E}_{Z \sim q(Z)}\left[ \log p(X) \right] \geq \mathbb{E}_{Z \sim q(Z)}\left[ \log p(Z,X) \right] - \mathbb{E}_{Z \sim q(Z)}\left[ \log q(Z) \right] \: \: \: \: \: (3)
+\]</div>
+<p>and since the prior <span class="arithmatex">\(p(X)\)</span> does not depend on <span class="arithmatex">\(Z\)</span> we can simplify the first expected value:</p>
+<div class="arithmatex">\[
+\log p(X) \geq \mathbb{E}_{Z \sim q(Z)}\left[ \log p(Z,X) \right] - \mathbb{E}_{Z \sim q(Z)}\left[ \log q(Z) \right] \: \: \: \: \: (4)
+\]</div>
+<p>We will use this inequality in a minute, but for now, let's use some notation to make equations shorter. Let's call <span class="arithmatex">\(L(q(Z)) =: \mathbb{E}_{Z \sim q(Z)}\left[ \log p(Z,X) \right] - \mathbb{E}_{Z \sim q(Z)}\left[ \log q(Z) \right]\)</span>.</p>
+<p>Note that when solving the variational optimization task, <span class="arithmatex">\(p(X)\)</span> remains constant. Therefore, we can rewrite Equation (2) as:</p>
+<div class="arithmatex">\[
+D_{KL}(q(Z), p(Z | X)) - p(X) = \mathbb{E}_{Z \sim q(Z)}\left[ \log q(Z) \right] - \mathbb{E}_{Z \sim q(Z)}\left[ \log p(Z,X) \right] = -L(q(Z))\: \: \: \: \: (5)
+\]</div>
+<p>Since, as we mentioned, <span class="arithmatex">\(p(X)\)</span> is constant in the variational optimization task, we can therefore equivalently minimize <span class="arithmatex">\(-L(q(Z))\)</span>. In order to use our previously found inequality, let's multiply Equation (6) by -1:</p>
+<div class="arithmatex">\[
+-D_{KL}(q(Z), p(Z | X)) + p(X) = L(q(Z))\: \: \: \: \: (6)
+\]</div>
+<p>Equation (6) means that we can address the variational optimization task equivalently by <em>maximizing</em> <span class="arithmatex">\(L(q(Z))\)</span>:</p>
+<div class="admonition note">
+<p class="admonition-title">Equivalent variational inference optimization task</p>
+<p>To find <span class="arithmatex">\(q^{*}(Z)\)</span> such that: 
+$$
+q^{*}(Z) = arg\max_{q} L(q(Z)) = \mathbb{E}<em Z="Z" _sim="\sim" q_Z_="q(Z)">{Z \sim q(Z)}\left[ \log p(Z,X) \right] - \mathbb{E}</em>\left[ \log q(Z) \right]
+$$</p>
+</div>
+<p>Note in inequality (4) that when <span class="arithmatex">\(p(X) = L(q(Z))\)</span> we have <span class="arithmatex">\(D_{KL}(q(Z), p(Z|X)) = 0\)</span>, and so the surrogate <span class="arithmatex">\(q(Z)\)</span> is no longer an approximation but instead is <em>exactly</em> equal to the posterior.</p>
+<p>Although this case is not achieved, inequality (4) provides a lower bound for the prior and also for the goodness of fit of our surrogate. For this reason, the quantity <span class="arithmatex">\(L(q(Z))\)</span> is called the ELBO (Evidence Lower BOund).</p>
+<h1 id="mean-field-variational-family">Mean field variational family</h1>
+<p>The mean field variational family approach decomposes the surrogate <span class="arithmatex">\(q(Z)\)</span> into a product of independent distributions <span class="arithmatex">\(q_{i}(Z_{i})\)</span>:</p>
+<div class="admonition note">
+<p class="admonition-title">Mean field variational family</p>
+<div class="arithmatex">\[
+q(Z), Z \in \mathbb{R}^{D} = \prod_{i=1}^{D} q_{i}(Z_{i})
+\]</div>
+</div>
+<p>Writing down the ELBO for this <span class="arithmatex">\(q(Z)\)</span> we have:</p>
+<div class="arithmatex">\[
+\int_{Z} \prod_{i=1}^{D} q_{i}(Z_{i}) \log p(Z,D) dZ - \int_{Z} \prod_{i=1}^{D} q_{i}(Z_{i}) \log q(Z) dZ := I_{1} - I_{2} \: \: \: \: \: (7)
+\]</div>
+<p>where <span class="arithmatex">\(\int_{Z} f(Z) dZ = \int_{Z_{1}} \int_{Z_{2}} \int_{...} \int_{Z_{D}} f(Z_{1}, ..., Z_{D}) dZ_{D}dZ_{D-1}...dZ_{1}\)</span> is a D-integral and we introduce</p>
+<div class="arithmatex">\[
+I_{1} := \int_{Z} \prod_{i=1}^{D} q_{i}(Z_{i}) \log p(Z,D) dZ
+\]</div>
+<p>and</p>
+<div class="arithmatex">\[
+I_{2} := \int_{Z} \prod_{i=1}^{D} q_{i}(Z_{i}) \log q(Z) dZ
+\]</div>
+<p>to simplify each expression separately.</p>
+<p>Let's start simplyfing <span class="arithmatex">\(I_{1}\)</span>.</p>
+<p>Let's assume we choose the index of one of the <span class="arithmatex">\(D\)</span> latent variables. </p>
+<p>Let's call the chosen index <span class="arithmatex">\(i\)</span>, while all the other indexes are 'captured' by the iterator <span class="arithmatex">\(j\)</span>.</p>
+<p>Therefore, we have:</p>
+<div class="arithmatex">\[
+I_{1} = \int_{Z_{i}} \int_{Z_{j: \forall j \neq i}} q_{i} (Z_{i}) \prod_{\forall j \neq i}^{D} q_{j}(Z_{j}) \log p(Z, D) dZ_{j: \forall j \neq i} dZ_{i} \: \: \: \: \: (8)
+\]</div>
+<div class="arithmatex">\[
+I_{1} = \int_{Z_{i}} q_{i}(Z_{i}) \int_{Z_{j: \forall j \neq i}} \prod_{\forall j \neq i}^{D} q_{j}(Z_{j}) \log p(Z, D) dZ_{j: \forall j \neq i} dZ_{i} \: \: \: \: \: (9)
+\]</div>
+<div class="arithmatex">\[
+I_{1} = \int_{Z_{i}} q_{i}(Z_{i}) \: \mathbb{E}_{Z_{j: \forall j \neq i} \sim \prod_{\forall j \neq i} q_{j}(Z_{j})} \left[ \log p(Z, D) \right] dZ_{i} \: \: \: \: \: (10)
+\]</div>
+<p>where the notation <span class="arithmatex">\(\int_{Z_{j: \forall j \neq i}} f(Z_{j: \forall j \neq i}) dZ_{j: \forall j \neq i}\)</span> represents the <span class="arithmatex">\(D-1\)</span> integral over all the latent variables not indexed by <span class="arithmatex">\(i\)</span>.</p>
+<p>On the other hand, for <span class="arithmatex">\(I_{2}\)</span> we have that:</p>
+<div class="arithmatex">\[
+I_{2} = \int_{Z_{i}} \int_{Z_{j: \forall j \neq i}} \left[ q_{i}(Z_{i}) \prod_{\forall j \neq i} q_{j}(Z_{j}) \right] \left[ \log q_{i}(Z_{i}) + \sum_{j: \forall j \neq i} \log q_{j}(Z_{j}) \right] dZ_{j: \forall j \neq i} dZ_{i} \: \: \: \: \: (11)
+\]</div>
+<div class="arithmatex">\[
+I_{2} = \int_{Z_{i}} \int_{Z_{j: \forall j \neq i}} q_{i}(Z_{i}) \prod_{\forall j \neq i} q_{j}(Z_{j}) \log q_{i}(Z_{i}) \: dZ_{j: \forall j \neq i} dZ_{i} + \int_{Z_{i}} \int_{Z_{j: \forall j \neq i}} q_{i}(Z_{i}) \prod_{\forall j \neq i} q_{j}(Z_{j}) \sum_{j: \forall j \neq i} \log q_{j}(Z_{j}) \: dZ_{j: \forall j \neq i} dZ_{i} \: \: \: \: \: (12)
+\]</div>
+<div class="arithmatex">\[
+I_{2} = \int_{Z_{i}} q_{i}(Z_{i}) \log q_{i}(Z_{i})  + \int_{Z_{j: \forall j \neq i}} \prod_{\forall j \neq i} q_{j}(Z_{j}) \sum_{j: \forall j \neq i} \log q_{j}(Z_{j}) \: dZ_{j: \forall j \neq i} \: \: \: \: \: (13)
+\]</div>
+<div class="arithmatex">\[
+I_{2} = \mathbb{E}_{Z_{i} \sim q_{i}(Z_{i})} \left[ \log q_{i}(Z_{i}) \right] + \mathbb{E}_{Z_{j: \forall j \neq i} \sim \prod_{\forall j \neq i} q_{j}(Z_{j})} \left[ \sum_{j: \forall j \neq i} \log q_{j}(Z_{j}) \right] \: \: \: \: \: (14)
+\]</div>
+<h1 id="disadvantage">Disadvantage</h1>
+<p>Mean field variational family doesn't approximate well multimodal posterior distributions.</p>
+<div style="margin-bottom:66px"><div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.path", "content.footnote.tooltips", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.ad660dcc.min.js"></script>
+      
+        <script src="../javascripts/katex.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js"></script>
+      
+    
+  <script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(() => { lightbox.reload() });
+</script></body>
+</html>
