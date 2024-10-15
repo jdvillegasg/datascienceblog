@@ -75,4 +75,6 @@ extra_javascript:
 nav:
   - Home: index.md
   - Bayesian learning:
-      - Variational inference: VI.md
+    - Variational inference: VI.md
+  - Neural Networks:
+    - RNN.md
