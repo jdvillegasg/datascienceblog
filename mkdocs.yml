@@ -76,5 +76,7 @@ nav:
   - Home: index.md
   - Bayesian learning:
     - Variational inference: VI.md
-  - Neural Networks:
-    - RNN.md
+  - Sequence Neural Networks:
+    - RNN: RNN.md
+    - LSTM: lstm.md
+    - GRU: GRU.md
