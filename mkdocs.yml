@@ -80,3 +80,6 @@ nav:
     - RNN: RNN.md
     - LSTM: lstm.md
     - GRU: GRU.md
+  - Encoder-Decoder:
+    - Transformer parameters: transformer_param.md
+    - Transformer arquitecture: transformer_arqui.md
